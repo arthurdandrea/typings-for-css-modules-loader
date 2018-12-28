@@ -1,5 +1,5 @@
 import cssLoader from 'css-loader';
-import cssLocalsLoader from 'css-loader/locals';
+import clone from 'clone';
 import loaderUtils from 'loader-utils';
 import 'colour';
 
@@ -16,6 +16,13 @@ import loggerCreator from './logger';
 function delegateToCssLoader(ctx, input, callback) {
   ctx.async = () => callback;
   cssLoader.call(ctx, ...input);
+}
+
+function cssLocalsLoader(...input) {
+  const that = clone(this);
+  that.query = clone(loaderUtils.getOptions(this));
+  that.query.exportOnlyLocals = true;
+  cssLoader.call(that, ...input);
 }
 
 module.exports = function(...input) {
