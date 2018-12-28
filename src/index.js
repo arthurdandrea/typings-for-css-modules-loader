@@ -1,7 +1,6 @@
 import cssLoader from 'css-loader';
 import clone from 'clone';
 import loaderUtils from 'loader-utils';
-import 'colour';
 
 import {
   filterNonWordClasses,
@@ -13,14 +12,21 @@ import {
 import * as persist from './persist';
 import loggerCreator from './logger';
 
+function normalizeContext(ctx) {
+  const that = clone(ctx);
+  that.query = clone(loaderUtils.getOptions(ctx) || {});
+  delete that.query.namedExport;
+  return that;
+}
+
 function delegateToCssLoader(ctx, input, callback) {
-  ctx.async = () => callback;
-  cssLoader.call(ctx, ...input);
+  const that = normalizeContext(ctx)
+  that.async = () => callback;
+  cssLoader.call(that, ...input);
 }
 
 function cssLocalsLoader(...input) {
-  const that = clone(this);
-  that.query = clone(loaderUtils.getOptions(this));
+  const that = normalizeContext(this);
   that.query.exportOnlyLocals = true;
   cssLoader.call(that, ...input);
 }
@@ -31,12 +37,11 @@ module.exports = function(...input) {
   // mock async step 1 - css loader is async, we need to intercept this so we get async ourselves
   const callback = this.async();
 
-  const query = loaderUtils.parseQuery(this.query);
+  const query = loaderUtils.getOptions(this) || {};
   const logger = loggerCreator(query.silent);
 
-  const moduleMode = query.modules || query.module;
-  if (!moduleMode) {
-    logger('warn','Typings for CSS-Modules: option `modules` is not active - skipping extraction work...'.red);
+  if (!query.modules) {
+    logger('warn','Typings for CSS-Modules: option `modules` is not active - skipping extraction work...');
     return delegateToCssLoader(this, input, callback);
   }
 
@@ -66,17 +71,17 @@ module.exports = function(...input) {
       if (skippedDefinitions.length > 0 && !query.camelCase) {
         logger('warn', `Typings for CSS-Modules: option 'namedExport' was set but 'camelCase' for the css-loader not.
 The following classes will not be available as named exports:
-${skippedDefinitions.map(sd => ` - "${sd}"`).join('\n').red}
-`.yellow);
+${skippedDefinitions.map(sd => ` - "${sd}"`).join('\n')}
+`);
       }
 
       const [nonReservedWordDefinitions, reservedWordDefinitions,] = filterReservedWordClasses(cleanedDefinitions);
       if (reservedWordDefinitions.length > 0) {
         logger('warn', `Your css contains classes which are reserved words in JavaScript.
 Consequently the following classes will not be available as named exports:
-${reservedWordDefinitions.map(rwd => ` - "${rwd}"`).join('\n').red}
+${reservedWordDefinitions.map(rwd => ` - "${rwd}"`).join('\n')}
 These can be accessed using the object literal syntax; eg styles['delete'] instead of styles.delete.
-`.yellow);
+`);
       }
 
       cssModuleDefinition = generateNamedExports(nonReservedWordDefinitions);
