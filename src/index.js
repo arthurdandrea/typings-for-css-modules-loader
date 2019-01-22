@@ -12,23 +12,21 @@ import {
 import * as persist from './persist';
 import loggerCreator from './logger';
 
-function normalizeContext(ctx) {
-  const that = clone(ctx);
-  that.query = clone(loaderUtils.getOptions(ctx) || {});
-  delete that.query.namedExport;
-  return that;
+function normalizeOptions(ctx) {
+  const options = loaderUtils.getOptions(ctx) || {};
+  const newOptions = {...options};
+  delete newOptions.namedExport;
+  return newOptions;
 }
 
 function delegateToCssLoader(ctx, input, callback) {
-  const that = normalizeContext(ctx)
-  that.async = () => callback;
-  cssLoader.call(that, ...input);
+  const options = normalizeOptions(ctx);
+  cssLoader.call({ ...ctx, query: options, async: () => callback }, ...input);
 }
 
 function cssLocalsLoader(...input) {
-  const that = normalizeContext(this);
-  that.query.exportOnlyLocals = true;
-  cssLoader.call(that, ...input);
+  const options = normalizeOptions(this);
+  cssLoader.call({ ...this, query: { ...options, exportOnlyLocals: true }}, ...input);
 }
 
 module.exports = function(...input) {
