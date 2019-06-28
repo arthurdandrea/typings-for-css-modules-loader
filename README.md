@@ -4,6 +4,7 @@ Webpack loader that works as a css-loader drop-in replacement to generate TypeSc
 
 ## Installation
 
+Install via yarn `yarn add --dev typings-for-css-modules-loader`
 Install via npm `npm install --save-dev typings-for-css-modules-loader`
 
 ## Options
