@@ -1,5 +1,4 @@
 import cssLoader from 'css-loader';
-import clone from 'clone';
 import loaderUtils from 'loader-utils';
 
 import {
@@ -65,7 +64,7 @@ module.exports = function(...input) {
     if (!query.namedExport) {
       cssModuleDefinition = generateGenericExportInterface(cssModuleKeys, filename);
     } else {
-      const [cleanedDefinitions, skippedDefinitions,] = filterNonWordClasses(cssModuleKeys);
+      const [cleanedDefinitions, skippedDefinitions] = filterNonWordClasses(cssModuleKeys);
       if (skippedDefinitions.length > 0 && !query.camelCase) {
         logger('warn', `Typings for CSS-Modules: option 'namedExport' was set but 'camelCase' for the css-loader not.
 The following classes will not be available as named exports:
@@ -73,7 +72,7 @@ ${skippedDefinitions.map(sd => ` - "${sd}"`).join('\n')}
 `);
       }
 
-      const [nonReservedWordDefinitions, reservedWordDefinitions,] = filterReservedWordClasses(cleanedDefinitions);
+      const [nonReservedWordDefinitions, reservedWordDefinitions] = filterReservedWordClasses(cleanedDefinitions);
       if (reservedWordDefinitions.length > 0) {
         logger('warn', `Your css contains classes which are reserved words in JavaScript.
 Consequently the following classes will not be available as named exports:

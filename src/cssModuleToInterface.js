@@ -22,10 +22,10 @@ const allWordsRegexp = /^\w+$/i;
 export const filterNonWordClasses = (cssModuleKeys) => {
   const filteredClassNames = cssModuleKeys.filter(classname => allWordsRegexp.test(classname));
   if (filteredClassNames.length === cssModuleKeys.length) {
-    return [filteredClassNames, [],];
+    return [filteredClassNames, []];
   }
   const nonWordClassNames = cssModuleKeys.filter(classname => !allWordsRegexp.test(classname));
-  return [filteredClassNames, nonWordClassNames,];
+  return [filteredClassNames, nonWordClassNames];
 };
 
 // Documented here: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#Reserved_keywords_as_of_ECMAScript_2015
@@ -62,15 +62,16 @@ const reservedWords = [
   'void',
   'while',
   'with',
-  'yield'
+  'yield',
 ];
+
 export const filterReservedWordClasses = (cssModuleKeys) => {
   const filteredClassNames = cssModuleKeys.filter(classname => reservedWords.indexOf(classname) === -1);
   if (filteredClassNames.length === cssModuleKeys.length) {
-    return [filteredClassNames, [],];
+    return [filteredClassNames, []];
   }
   const reservedWordClassNames = cssModuleKeys.filter(classname => reservedWords.indexOf(classname) !== -1);
-  return [filteredClassNames, reservedWordClassNames,];
+  return [filteredClassNames, reservedWordClassNames];
 };
 
 
@@ -90,7 +91,7 @@ export const generateGenericExportInterface = (cssModuleKeys, filename, indent) 
   const interfaceName = filenameToInterfaceName(filename);
   const interfaceProperties = cssModuleToTypescriptInterfaceProperties(cssModuleKeys, indent);
   return (
-`export interface ${interfaceName} {
+    `export interface ${interfaceName} {
 ${interfaceProperties}
 }
 

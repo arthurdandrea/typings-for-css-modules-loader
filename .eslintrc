@@ -28,18 +28,17 @@
       "error",
       "always"
     ],
-    "no-console": [
-      0
-    ],
+    "no-console": "off",
     "no-var": [
       "error"
     ],
     "comma-dangle": [
       "error",
-      "always"
+      "always-multiline"
     ],
     "no-unused-vars": [
       2, {"vars": "all", "args": "after-used"}
-    ]
+    ],
+    "no-cond-assign": "off"
   }
 }
