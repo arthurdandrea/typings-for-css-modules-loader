@@ -1,2 +1,3 @@
 node_modules
 example*.css.d.ts
+test/bundle.js

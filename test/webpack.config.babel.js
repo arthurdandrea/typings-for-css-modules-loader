@@ -1,7 +1,8 @@
- const loader   = require.resolve('../lib/index.js');
+const loader = require.resolve('../lib/index.js');
 
 module.exports = {
   entry: './test/entry.ts',
+  mode: 'development',
   output: {
     path: __dirname,
     filename: 'bundle.js'
