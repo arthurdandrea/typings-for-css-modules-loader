@@ -25,7 +25,7 @@ function delegateToCssLoader(ctx, input, callback) {
 
 function cssLocalsLoader(...input) {
   const options = normalizeOptions(this);
-  cssLoader.call({ ...this, query: { ...options, exportOnlyLocals: true }}, ...input);
+  cssLoader.call({ ...this, query: { ...options, onlyLocals: true }}, ...input);
 }
 
 module.exports = function(...input) {
@@ -65,8 +65,8 @@ module.exports = function(...input) {
       cssModuleDefinition = generateGenericExportInterface(cssModuleKeys, filename);
     } else {
       const [cleanedDefinitions, skippedDefinitions] = filterNonWordClasses(cssModuleKeys);
-      if (skippedDefinitions.length > 0 && !query.camelCase) {
-        logger('warn', `Typings for CSS-Modules: option 'namedExport' was set but 'camelCase' for the css-loader not.
+      if (skippedDefinitions.length > 0 && query.localsConvention !== 'camelCase') {
+        logger('warn', `Typings for CSS-Modules: option 'namedExport' was set but option 'localsConvention' is not 'camelCase' for the css-loader.
 The following classes will not be available as named exports:
 ${skippedDefinitions.map(sd => ` - "${sd}"`).join('\n')}
 `);
